@@ -1,0 +1,277 @@
+-- MORPMEEP HUB - ULTIMATE VERSION FULLY PATCHED AND UPGRADED
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+-- Clean up existing UI
+if game.CoreGui:FindFirstChild("MorpmeepHub") then
+    game.CoreGui.MorpmeepHub:Destroy()
+end
+
+-- Create ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "MorpmeepHub"
+gui.ResetOnSpawn = false
+gui.Parent = game.CoreGui
+
+-- Main Menu Frame enlarged height
+local menu = Instance.new("Frame", gui)
+menu.Name = "MainMenu"
+menu.Size = UDim2.new(0, 400, 0, 900)
+menu.Position = UDim2.new(0.5, -200, 0.5, -450)
+menu.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+menu.BorderColor3 = Color3.fromRGB(0, 255, 0)
+menu.BorderSizePixel = 2
+menu.Visible = true
+
+enableDrag = function(frame)
+    local dragging, dragInput, dragStart, startPos
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true; dragStart = input.Position; startPos = frame.Position
+            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
+        end
+    end)
+    frame.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+enableDrag(menu)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if input.KeyCode == Enum.KeyCode.M and not gp then menu.Visible = not menu.Visible end
+end)
+
+-- Title
+local title = Instance.new("TextLabel", menu)
+title.Size = UDim2.new(1,0,0,40)
+title.Position = UDim2.new(0,0,0,0)
+title.BackgroundTransparency = 1
+title.Text = "🌟 Morpmeep Hub ULTIMATE"
+title.Font = Enum.Font.Cartoon
+title.TextSize = 24
+title.TextColor3 = Color3.fromRGB(0,255,0)
+title.TextStrokeTransparency = 0.7
+title.TextStrokeColor3 = Color3.fromRGB(0,0,0)
+
+-- Avatar & Name
+local avatar = Instance.new("ImageLabel", menu)
+avatar.Size = UDim2.new(0,50,0,50)
+avatar.Position = UDim2.new(0,10,0,50)
+avatar.BackgroundTransparency = 1
+avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..LocalPlayer.UserId.."&width=420&height=420&format=png"
+local nameLabel = Instance.new("TextLabel", menu)
+nameLabel.Size = UDim2.new(1,-70,0,30)
+nameLabel.Position = UDim2.new(0,70,0,60)
+nameLabel.BackgroundTransparency = 1
+nameLabel.Text = string.format("%s (@%s)",LocalPlayer.DisplayName,LocalPlayer.Name)
+nameLabel.Font = Enum.Font.Cartoon
+nameLabel.TextSize = 18
+nameLabel.TextColor3 = Color3.fromRGB(0,255,0)
+nameLabel.TextStrokeTransparency = 0.7
+nameLabel.TextStrokeColor3 = Color3.fromRGB(0,0,0)
+
+-- Key Frame
+local keyFrame = Instance.new("Frame", gui)
+keyFrame.Size = UDim2.new(0,300,0,150)
+keyFrame.Position = UDim2.new(0.5,-150,0.5,-75)
+keyFrame.BackgroundColor3 = Color3.fromRGB(15,15,15)
+keyFrame.BorderColor3 = Color3.fromRGB(0,255,0)
+keyFrame.BorderSizePixel = 2
+local keyBox = Instance.new("TextBox", keyFrame)
+keyBox.Size = UDim2.new(0.8,0,0,40)
+keyBox.Position = UDim2.new(0.1,0,0.25,0)
+keyBox.PlaceholderText = "Enter Key (MORPMEEP)"
+keyBox.TextScaled = true
+keyBox.BackgroundColor3 = Color3.fromRGB(0,40,0)
+keyBox.BorderColor3 = Color3.fromRGB(0,255,0)
+keyBox.TextColor3 = Color3.fromRGB(0,255,0)
+local submitBtn = Instance.new("TextButton", keyFrame)
+submitBtn.Size = UDim2.new(0.5,0,0,40)
+submitBtn.Position = UDim2.new(0.25,0,0.65,0)
+submitBtn.Text = "Submit"
+submitBtn.TextScaled = true
+submitBtn.BackgroundColor3 = Color3.fromRGB(0,40,0)
+submitBtn.BorderColor3 = Color3.fromRGB(0,255,0)
+submitBtn.TextColor3 = Color3.fromRGB(0,255,0)
+submitBtn.MouseButton1Click:Connect(function()
+    if keyBox.Text:upper()=="MORPMEEP" then keyFrame:Destroy(); menu.Visible=true
+    else keyBox.Text="WRONG KEY" end
+end)
+
+-- Buttons Helper
+local yOffset = 110
+local function createButton(text, cb)
+    local btn = Instance.new("TextButton", menu)
+    btn.Size = UDim2.new(0.9,0,0,40)
+    btn.Position = UDim2.new(0.05,0,0,yOffset)
+    btn.Text = text
+    btn.Font = Enum.Font.Cartoon
+    btn.TextScaled = true
+    btn.BackgroundColor3 = Color3.fromRGB(0,40,0)
+    btn.BorderColor3 = Color3.fromRGB(0,255,0)
+    btn.BorderSizePixel = 2
+    btn.TextColor3 = Color3.fromRGB(0,255,0)
+    btn.TextStrokeTransparency = 0.3
+    btn.TextStrokeColor3 = Color3.fromRGB(0,0,0)
+    btn.ZIndex = 10
+    btn.MouseButton1Click:Connect(cb)
+    yOffset = yOffset + 45
+    return btn
+end
+
+-- Core Buttons
+createButton("Become SUPER BIG", function()
+    for _,p in ipairs(LocalPlayer.Character:GetDescendants()) do
+        if p:IsA("BasePart") then p.Size = p.Size * 10 end
+    end
+end)
+
+createButton("Spin Yourself", function()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        RunService.Heartbeat:Connect(function()
+            hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(10), 0)
+        end)
+    end
+end)
+
+createButton("Kill All", function()
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer and plr.Character then plr.Character:BreakJoints() end
+    end
+end)
+
+createButton("Fling All", function()
+    local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer and not LocalPlayer:IsFriendsWith(plr.UserId) and plr.Character and myHRP then
+            local bv = Instance.new("BodyVelocity", plr.Character.HumanoidRootPart)
+            bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+            bv.Velocity = (plr.Character.HumanoidRootPart.Position - myHRP.Position).Unit * 100
+            delay(0.2, function() bv:Destroy() end)
+        end
+    end
+end)
+
+createButton("Fling Player", function()
+    local popup = Instance.new("Frame", gui)
+    popup.Size = UDim2.new(0,200,0,0)
+    popup.Position = UDim2.new(0.5,210,0.5,-100)
+    popup.BackgroundColor3 = Color3.fromRGB(15,15,15)
+    popup.BorderColor3 = Color3.fromRGB(0,255,0)
+    local idx = 0
+    local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer and not LocalPlayer:IsFriendsWith(plr.UserId) then
+            idx = idx + 1
+            local b = Instance.new("TextButton", popup)
+            b.Size = UDim2.new(1,0,0,30)
+            b.Position = UDim2.new(0,0,0,(idx-1)*30)
+            b.Text = plr.Name
+            b.TextScaled = true
+            b.MouseButton1Click:Connect(function()
+                if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and myHRP then
+                    local bv = Instance.new("BodyVelocity", plr.Character.HumanoidRootPart)
+                    bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+                    bv.Velocity = (plr.Character.HumanoidRootPart.Position - myHRP.Position).Unit * 100
+                    delay(0.2, function() bv:Destroy() end)
+                end
+                popup:Destroy()
+            end)
+        end
+    end
+    popup.Size = UDim2.new(0,200,0,idx*30)
+end)
+
+createButton("Tool Grabber", function()
+    for _,t in ipairs(Workspace:GetDescendants()) do
+        if t:IsA("Tool") then t.Parent = LocalPlayer.Backpack end
+    end
+end)
+
+createButton("Noclip", function()
+    RunService.Stepped:Connect(function()
+        if LocalPlayer.Character then
+            for _,v in ipairs(LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then v.CanCollide = false end
+            end
+        end
+    end)
+end)
+
+createButton("Fly", function()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local bv = Instance.new("BodyVelocity", hrp)
+    bv.MaxForce = Vector3.new(1e5,1e5,1e5)
+    UserInputService.InputBegan:Connect(function(i)
+        if i.KeyCode == Enum.KeyCode.W then bv.Velocity = Workspace.CurrentCamera.CFrame.LookVector * 50
+        elseif i.KeyCode == Enum.KeyCode.S then bv.Velocity = -Workspace.CurrentCamera.CFrame.LookVector * 50 end
+    end)
+    UserInputService.InputEnded:Connect(function() bv.Velocity = Vector3.new() end)
+end)
+
+-- ESP Highlight
+createButton("ESP (Highlight)", function()
+    for _,plr in ipairs(Players:GetPlayers()) do
+        if plr~=LocalPlayer and plr.Character and not plr.Character:FindFirstChild("MorpmeepHighlight") then
+            local h = Instance.new("Highlight", plr.Character)
+            h.Adornee = plr.Character
+            h.FillTransparency = 1
+            h.OutlineColor = Color3.fromRGB(0,255,0)
+            h.OutlineTransparency = 0
+            h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        end
+    end
+end)
+
+-- Silly Guitar Autoplayer (GingGangGoolie only)
+createButton("Silly Guitar Autoplayer", function()
+    local guitarGui = Instance.new("ScreenGui", gui)
+    guitarGui.Name = "GuitarGui"
+    local playing = true
+    local song = {"F","H","K","K","K","K","K","L","K","H","F","H","G","F","G","H"}
+    coroutine.wrap(function()
+        while playing do
+            for _, key in ipairs(song) do
+                VirtualInputManager:SendKeyEvent(true, key, false, game)
+                VirtualInputManager:SendKeyEvent(false, key, false, game)
+                wait(0.51)
+            end
+        end
+    end)()
+    UserInputService.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.E then
+            playing = false
+            guitarGui:Destroy()
+        end
+    end)
+end)
+
+createButton("[QUIZBOT] Damian11", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Damian-11/quizbot/master/quizbot.luau"))()
+end)
+createButton("[SPY CHAT]", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/4a5w2tYv"))()
+end)
+createButton("Get Silly Guitar (BAER)", function()
+    if game.PlaceId == 8737602449 then
+        local g = Instance.new("Tool")
+        g.Name = "Silly Guitar"
+        g.RequiresHandle = false
+        g.Parent = LocalPlayer.Backpack
+    end
+end)
+
+print("✅ Morpmeep Hub fully loaded with all features!")
