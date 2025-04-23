@@ -39,3 +39,4 @@ Thanks for using Morpmeep Hub and supporting the project! We’re just getting s
 
 Stay tuned, stay silly, and stay Morpy 😏
 
+Loadstring Version: loadstring(game:HttpGet("https://raw.githubusercontent.com/Morpmeep123/Morpmeep-hub/refs/heads/main/Morpmeep%20hub%20(PC%20ONLY%20EDITION)",true))()
